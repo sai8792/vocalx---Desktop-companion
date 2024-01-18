@@ -1,0 +1,143 @@
+# Import necessary modules for the voice assistant
+
+import datetime     # Module to work with date and time
+import pyttsx3      # Text-to-speech library for voice output
+import speech_recognition as sr   # Speech recognition library for voice input
+import wikipedia     # Access Wikipedia for information
+import webbrowser      # Open web pages in the default web browser
+import os           # Access and execute system files and commands
+import pyjokes         # Generate and tell jokes
+import requests         # Send HTTP requests and handle responses
+
+
+# Initialize the text-to-speech engine
+engine = pyttsx3.init('sapi5')
+voices = engine.getProperty('voices')
+engine.setProperty('voice', voices[1].id)
+
+# # Function to speak a given text
+def speak(audio):
+     engine.say(audio)
+     engine.runAndWait()
+
+
+# Function to greet the user based on the time of day
+def wishMe():
+    hour = int(datetime.datetime.now().hour)
+    if hour>=0 and hour<12:
+        speak("Hello sir, madam, good morning")
+
+    elif hour>=12 and hour<18:
+        speak("Hello sir, madam, good afternoon")
+
+    else:
+        speak("Hello sir, madam, good evening")
+
+    speak("I am vocal x . please tell me how may i help you")
+
+# Function to listen to user's voice command
+def takeCommand():
+     # it takes microphone input from the user and return string output
+    r = sr.Recognizer()
+    with sr.Microphone() as source:
+        print("Listning...")
+        r.pause_threshold = 1
+        audio = r.listen(source)
+
+    try:
+        print("Recognizing...")
+        query = r.recognize_google(audio, language='en-in')
+        print(f"User said: {query}\n")
+    except Exception as e:     # If there's an error in recognizing the speech, ask the user to repeat
+         #print(e)
+        print("say that again please...")
+        return "None"
+    return query
+
+if __name__ == "__main__":
+    wishMe()
+    while True:
+        query = takeCommand().lower()
+
+        if 'wikipedia' in query:     # Command to search on Wikipedia
+            speak("searching wikipedia...")
+            query = query.replace("wikipedia", "")
+            results = wikipedia.summary(query, sentences = 2)
+            speak("according to wikipedia")
+            print(results)
+            speak(results)
+
+        elif 'how are you ' in query:      # Greeting response
+            speak("i am fine sir. thanks about asking. how are you doing")
+
+        elif 'open youtube' in query:       # Command to open YouTube
+            speak("opening you tube")
+            webbrowser.open("youtube.com")
+
+        elif 'open google' in query:         # Command to open google
+            speak("opening google")
+            webbrowser.open("google.com")
+
+        elif 'play music' in query:           # Command to play music
+            music_dir = 'D:\\songs'
+            songs = os.listdir(music_dir)
+            print(songs)
+            os.startfile(os.path.join(music_dir, songs[0]))
+
+        elif 'the time' in query:             # Command to get the current time
+            strTime = datetime.datetime.now().strftime("%H:%M:%S")
+            speak(f"sir, the time is {strTime}")
+
+        elif 'joke' in query:             # Command to tell a joke
+            speak(pyjokes.get_joke())
+
+        elif 'news' in query:              # Command to open news website
+            news = webbrowser.open_new_tab("https://timesofindia.indiatimes.com")
+            speak('Here are some headlines from the Times of India, Happy reading')
+
+        elif 'open facebook' in query:       # Command to open facebook
+            speak('Opening Facebook')
+            webbrowser.open("https://www.facebook.com")
+
+        elif 'open instagram' in query:        # Command to open instagram
+            speak('Opening instagram')
+            webbrowser.open("https://www.instagram.com/explore/?hl=en")
+
+        elif 'open linkedin' in query:         # Command to open linkedin
+            speak("opening linkedin")
+            webbrowser.open("https://www.linkedin.com")
+
+
+        elif 'open chatgpt' in query:           # Command to open chatgpt
+            speak("opening chatgpt")
+            webbrowser.open("https://chat.openai.com")
+
+        elif 'open microsoft word' in query:        # Command to open microsoft word
+            speak("opening microsoft word")
+            os.startfile("C:\Program Files\Microsoft Office\root\Office16\WINWORD.EXE")
+
+
+        elif 'open microsoft excel' in query:         # Command to open excel
+            speak("opening microsoft excel")
+            os.startfile("C:\Program Files\Microsoft Office\root\Office16\EXCEL.EXE")
+
+
+        elif 'open microsoft powerpoint' in query:      # Command to open powerpoint
+            speak("opening microsoft powerpoint")
+            os.startfile("C:\Program Files\Microsoft Office\root\Office16\POWERPNT.EXE")
+
+        elif 'play movie' in query:           # Command to play movies
+            movies_dir = 'D:\\movies'
+            movies = os.listdir(movies_dir)
+            print(movies)
+            os.startfile(os.path.join(movies_dir, movies[0]))
+
+
+
+        elif 'exit' in query:
+            speak("quiting sir, thank you for using vocal x ")
+
+            break;
+
+
+
